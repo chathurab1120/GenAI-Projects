@@ -1,0 +1,31 @@
+{
+  "gold_cases": [
+    {
+      "case_id": "EVAL-001",
+      "description": "Lumbar MRI — clear approval case",
+      "diagnosis": "Low back pain with radiculopathy",
+      "requested_service": "MRI Lumbar Spine",
+      "clinical_note_summary": "8 weeks symptoms, completed PT and NSAIDs, neurological deficits present",
+      "expected_decision": "APPROVE",
+      "expected_criteria_met": ["duration_6_weeks", "conservative_therapy", "neurological_deficits"]
+    },
+    {
+      "case_id": "EVAL-002",
+      "description": "Lumbar MRI — deny case, too early",
+      "diagnosis": "Acute low back pain",
+      "requested_service": "MRI Lumbar Spine",
+      "clinical_note_summary": "2 weeks symptoms, no conservative therapy attempted, no red flags",
+      "expected_decision": "DENY",
+      "expected_criteria_met": []
+    },
+    {
+      "case_id": "EVAL-003",
+      "description": "Sleep study — need more info case",
+      "diagnosis": "Possible sleep apnea",
+      "requested_service": "Polysomnography",
+      "clinical_note_summary": "Snoring reported but no Epworth score, no HSAT attempt documented",
+      "expected_decision": "NEED_MORE_INFO",
+      "expected_criteria_met": ["snoring_symptom"]
+    }
+  ]
+}

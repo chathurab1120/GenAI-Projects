@@ -1,8 +1,9 @@
 import streamlit as st
-import requests
 import json
-
-API_BASE_URL = "http://127.0.0.1:8000"
+import os
+import sys
+from pathlib import Path
+sys.path.insert(0, str(Path(__file__).parent.parent))
 
 SAMPLE_CASES = {
     "Lumbar Spine MRI — Approval case": {
@@ -69,27 +70,35 @@ DECISION_ICONS = {
 }
 
 
-def check_api_health() -> bool:
-    try:
-        r = requests.get(f"{API_BASE_URL}/health", timeout=3)
-        return r.status_code == 200
-    except Exception:
-        return False
-
-
 def run_review(payload: dict) -> dict | None:
     try:
-        r = requests.post(
-            f"{API_BASE_URL}/review",
-            json=payload,
-            timeout=120,
-        )
-        if r.status_code == 200:
-            return r.json()
-        st.error(f"API error {r.status_code}: {r.text}")
-        return None
+        import sys
+        from pathlib import Path
+        sys.path.insert(0, str(Path(__file__).parent.parent))
+        from app.workflows.graph import pa_review_graph
+        result = pa_review_graph.invoke(payload)
+        return {
+            "case_id": payload["case_id"],
+            "decision": result.get("decision", "NEED_MORE_INFO"),
+            "confidence": result.get("confidence", 0.0),
+            "case_summary": result.get("case_summary", ""),
+            "rationale": result.get("rationale", ""),
+            "missing_information": result.get("missing_information", []),
+            "criteria_results": result.get("criteria_results", []),
+            "retrieved_chunks": result.get("retrieved_chunks", []),
+            "reviewer_note": result.get("reviewer_note", ""),
+            "citations": result.get("citations", []),
+            "disclaimer": result.get(
+                "disclaimer",
+                "AI-generated draft — human review required"
+            ),
+            "prompt_tokens_total": result.get("prompt_tokens_total", 0),
+            "completion_tokens_total": result.get(
+                "completion_tokens_total", 0
+            ),
+        }
     except Exception as e:
-        st.error(f"Could not reach API: {e}")
+        st.error(f"Review failed: {e}")
         return None
 
 
@@ -154,16 +163,6 @@ st.caption(
     "GenAI-powered prior authorization review using RAG + LangGraph. "
     "Synthetic demo data only."
 )
-
-# ── API status ───────────────────────────────────────────
-api_ok = check_api_health()
-if api_ok:
-    st.success("API connected")
-else:
-    st.error(
-        "API not reachable. Start the backend first: "
-        "uvicorn app.api.main:app --reload"
-    )
 
 st.divider()
 
@@ -230,7 +229,6 @@ clinical_note = st.text_area(
 run_btn = st.button(
     "Run Prior Auth Review",
     type="primary",
-    disabled=not api_ok,
 )
 
 # ── Run review ───────────────────────────────────────────

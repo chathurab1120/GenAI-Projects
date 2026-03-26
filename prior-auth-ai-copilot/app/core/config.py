@@ -1,6 +1,7 @@
 from pydantic_settings import BaseSettings
 from pydantic import Field
 from functools import lru_cache
+from pathlib import Path
 
 
 class Settings(BaseSettings):
@@ -19,7 +20,11 @@ class Settings(BaseSettings):
     default_temperature: float = Field(default=0.0)
 
     # Vector store
-    vector_store_path: str = Field(default="data/processed/vector_store")
+    vector_store_path: str = Field(
+        default=str(
+            Path(__file__).parent.parent.parent / "data" / "processed" / "vector_store"
+        )
+    )
     chroma_collection_name: str = Field(default="prior_auth_policies")
 
     # Database

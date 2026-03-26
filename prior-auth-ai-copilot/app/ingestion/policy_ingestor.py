@@ -2,11 +2,13 @@ from app.core.constants import DocumentType
 from app.core.logging_config import get_logger
 from app.ingestion.document_loader import load_documents_from_folder
 from app.ingestion.text_chunker import chunk_documents, DocumentChunk
+from pathlib import Path
 
 logger = get_logger(__name__)
 
-POLICY_DOCS_PATH = "data/policy_docs"
-CLINICAL_NOTES_PATH = "data/clinical_notes"
+_PROJECT_ROOT = Path(__file__).parent.parent.parent
+POLICY_DOCS_PATH = str(_PROJECT_ROOT / "data" / "policy_docs")
+CLINICAL_NOTES_PATH = str(_PROJECT_ROOT / "data" / "clinical_notes")
 
 
 def ingest_policy_documents() -> list[DocumentChunk]:

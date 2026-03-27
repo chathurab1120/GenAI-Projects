@@ -117,7 +117,6 @@ prior-auth-ai-copilot/
 ├── scripts/                   Verification and ingestion scripts
 ├── .env.example               Environment variable template
 ├── requirements.txt           Python dependencies
-└── CONTEXT.md                 Project context for AI-assisted development
 
 ---
 
